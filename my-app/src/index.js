@@ -14,11 +14,9 @@ import App from './components/App';
 //   document.getElementById('root')
 // )
 
-const playlists = [{name: 'playlist', id:1}, {name:'playlist two', id:2}];
-const playlistSongs = [{name: 'playlist song one', id:1}, {name:'playlist song two', id:2}];
-const favSongs = [{name: 'song one', id:1}, {name:'song two', id:2}];
-const favArtists = [{name: 'artist one', id:1}, {name:'artist two', id:2}];
+const accessToken = window.location.hash.substring(14);
+
 render(
-  <App playlists={playlists} favSongs={favSongs} favArtists={favArtists} selectedPlaylistSongs={playlistSongs} />,
+  <App accessToken={accessToken} />,
   document.getElementById('root')
 )

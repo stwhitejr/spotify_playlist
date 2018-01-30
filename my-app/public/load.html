@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+  Loading...
+  <script>
+    function makeid() {
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for (var i = 0; i < 16; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+      return text;
+    }
+
+    const client_id = 'bd1fe0f2bee9403e9ac6a1f0d5251041'; // Your client id
+    const redirect_uri = 'http://localhost:3000/'; // Your redirect uri
+    let scope = 'user-read-private user-read-email playlist-modify-public playlist-read-private user-library-read user-follow-read user-library-modify';
+    const state = makeid();
+    window.location.assign(`https://accounts.spotify.com/authorize?response_type=token&client_id=${client_id}&scope=${scope}&redirect_uri=${redirect_uri}`);
+  </script>
+</body>
+</html>

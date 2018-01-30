@@ -5,27 +5,6 @@ import { render } from 'react-dom'
 // import reducers from './reducers';
 import App from './components/App';
 
-const spotifyApiRequest = () => {
-  const myId = 1259501284;
-  const playlistId = '6ceEv0hwgGEOGLFGv0ivw1';
-
-  const access_token = 'BQCW98T_b-I7jLFiH25NrLVO-5potSCrnuE3Aqqj2ryDvmYzRmmD-mWjtbTn6HHcpRyEgpn_CqdGdQJwRG_crJei46AJlU6fSbQwXvgkT2sc4GNqhyef8S85677563h2ViwCOjmzo7ZWIFbzZxz60jlD9Vo2P12KVwQIAFYLkwhrCQtUURQqmEISgdVJSBM&refresh_token=AQDrpmO1R9o83rAE2QNiXiI_jR97d9HycNPF5JbDlH4LcSdEm8vWxJSt1bWqaW1Mh_YoL1W-eM2KLphFwdCWQkmpH6BERf4XQiobLY-D1eAqYmHJOb-Speus7qWjtJfYBHs';
-
-  // If we have an access token move forward
-  //TODO Load playlist selection page
-  const config = {
-    method: 'GET',
-    headers: new Headers({
-      'Authorization': 'Bearer ' + access_token
-    })
-  }
-  fetch(`https://api.spotify.com/v1/users/${myId}/playlists/${playlistId}/tracks`, config).then((response) => {
-    return response.json();
-  }).then((json) => {
-    console.log(json);
-  });
-}
-
 // let store = createStore(reducers);
 
 // render(

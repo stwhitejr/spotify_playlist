@@ -6,9 +6,11 @@ export class PlaylistMenu extends Component {
       <div>
       Choose Playlist:
         <select onChange={this.props.selectPlaylist}>
-          {this.props.playlists.map((playlist) => {
+          {this.props.playlists ?
+            this.props.playlists.map((playlist) => {
             return <option key={playlist.id} value={playlist.id}>{playlist.name}</option>
-          })}
+            }) : ''
+          }
         </select>
       </div>
     )

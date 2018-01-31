@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PlaylistMenu from './PlaylistMenu';
-import PlaylistSongs from './PlaylistSongs';
 import AddToPlaylist from './AddToPlaylist';
 
 const spotifyRequest = (path, method, accessToken, body, callback) => {
@@ -24,7 +23,6 @@ const spotifyRequest = (path, method, accessToken, body, callback) => {
     }
   });
 }
-//TODO Convert all these fetches to a utility function
 
 export class App extends Component {
   constructor(props) {
@@ -107,8 +105,7 @@ export class App extends Component {
   render() {
     return (
       <div className="container">
-        <PlaylistMenu playlists={this.state.playlists} selectPlaylist={(e) => {this.setPlaylist(e.target.value)}} />
-        <PlaylistSongs songs={this.state.selected_playlist_songs} removeSong={(e) => this.removeSongFromPlaylist(e.target.getAttribute('data-song-id'))} />
+        <PlaylistMenu playlists={this.state.playlists} selectPlaylist={(e) => {this.setPlaylist(e.target.value)}} songs={this.state.selected_playlist_songs} removeSong={(e) => this.removeSongFromPlaylist(e.target.getAttribute('data-song-id'))} />
         <AddToPlaylist favSongs={this.state.fav_songs} favArtists={this.state.fav_artists} addSongToPlaylist={(e) => {this.addSongToPlaylist(e.target.getAttribute('data-song-id'))}} />
       </div>
     )

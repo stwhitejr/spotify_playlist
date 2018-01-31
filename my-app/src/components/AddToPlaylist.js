@@ -7,7 +7,8 @@ export class AddToPlaylist extends Component {
         <div>
           <h1>Add songs to playlist</h1>
           {this.props.favSongs ?
-            this.props.favSongs.map(song => <div key={song.track.id} data-song-id={song.track.id} onClick={this.props.addSongToPlaylist}>{song.track.name}</div>) : ''
+            this.props.favSongs.map(song => <div key={song.track.id} data-song-id={song.track.id} onClick={this.props.addSongToPlaylist}>
+              {song.track.artists[0].name} - {song.track.name}</div>) : ''
           }
         </div>
         <div>

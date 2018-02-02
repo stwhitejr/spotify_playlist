@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import PlaylistMenu from './PlaylistMenu';
-import AddToPlaylist from './AddToPlaylist';
+import ContentMenu from './ContentMenu';
+import FavSongs from './FavSongs';
+import FavArtists from './FavArtists';
+import SearchResults from './SearchResults';
+import '../css/App.css';
 
 const spotifyRequest = (path, method, accessToken, body, callback) => {
   const config = {
@@ -106,7 +110,13 @@ export class App extends Component {
     return (
       <div className="container">
         <PlaylistMenu playlists={this.state.playlists} selectPlaylist={(e) => {this.setPlaylist(e.target.value)}} songs={this.state.selected_playlist_songs} removeSong={(e) => this.removeSongFromPlaylist(e.target.getAttribute('data-song-id'))} />
-        <AddToPlaylist favSongs={this.state.fav_songs} favArtists={this.state.fav_artists} addSongToPlaylist={(e) => {this.addSongToPlaylist(e.target.getAttribute('data-song-id'))}} />
+        <div className="ContentBox">
+          <ContentMenu />
+          //TODO make addSongToPlaylist method easier to reuse
+          <FavSongs favSongs={this.state.fav_songs} addSongToPlaylist={(e) => {this.addSongToPlaylist(e.target.getAttribute('data-song-id'))}} />
+          <FavArtists favArtists={this.state.fav_artists} addSongToPlaylist={(e) => {this.addSongToPlaylist(e.target.getAttribute('data-song-id'))}} />
+          <SearchResults />
+        </div>
       </div>
     )
   }

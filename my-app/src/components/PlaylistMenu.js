@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import '../css/PlaylistMenu.css';
 
 export class PlaylistMenu extends Component {
   render() {

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-export class AddToPlaylist extends Component {
+export class FavSongs extends Component {
   render() {
     return (
-      <div>
+      <div className="FavSongs">
         <div>
           <h1>Add songs to playlist</h1>
           {this.props.favSongs ?
@@ -11,15 +11,9 @@ export class AddToPlaylist extends Component {
               {song.track.artists[0].name} - {song.track.name}</div>) : ''
           }
         </div>
-        <div>
-          <h1>Artists</h1>
-          {this.props.favArtists ?
-            this.props.favArtists.map(artist => <div key={artist.id}>{artist.name}</div>) : ''
-          }
-        </div>
       </div>
     )
   }
 }
 
-export default AddToPlaylist;
+export default FavSongs;

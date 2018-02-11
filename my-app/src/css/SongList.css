@@ -1,0 +1,45 @@
+.SongList-row {
+  display: flex;
+  border-bottom: solid 1px #575757;
+  justify-content: space-between;
+}
+.SongList-row:first-child {
+  border-bottom-width: 2px;
+  color: #7d7d7d;
+}
+.SongList-row:hover:not(:first-child) {
+  background-color: #575757;
+}
+.SongList-title {
+  width: 30%;
+  padding: 10px;
+}
+.SongList-row:not(:first-child) .SongList-title {
+  cursor: pointer;
+}
+.SongList-artist {
+  width: 40%;
+  padding: 10px;
+}
+.SongList-length {
+  width: 20%;
+  padding: 10px;
+}
+.SongList-play,
+.SongList-playNoPreview {
+  width: 2%;
+  padding: 10px;
+  overflow: hidden;
+}
+.SongList-row:not(:first-child) .SongList-play::before {
+  content: '\203A';
+  display: block;
+  border-radius: 50%;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  width: 20px;
+  height: 20px;
+  background-color: #000;
+  cursor: pointer;
+}

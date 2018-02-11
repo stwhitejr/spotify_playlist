@@ -1,45 +1,27 @@
 import React, { Component } from 'react';
+import { spotifyRequest, spotifyRequestNext } from '../utility/Spotify.js';
 import PlaylistMenu from './PlaylistMenu';
 import ContentMenu from './ContentMenu';
-import FavSongs from './FavSongs';
-import FavArtists from './FavArtists';
-import SearchResults from './SearchResults';
+import SongList from './SongList';
+import ArtistList from './ArtistList';
 import '../css/App.css';
-
-const spotifyRequest = (path, method, accessToken, body, callback) => {
-  const config = {
-    method,
-    headers: new Headers({
-      'Authorization': 'Bearer ' + accessToken,
-      'Content-Type': 'application/json'
-    }),
-    body
-  }
-  fetch(`https://api.spotify.com/v1/${path}`, config).then((response) => {
-    if (response.status === 200 || response.status === 201) {
-      return response.json();
-    } else {
-      return false;
-    }
-  }).then((json) => {
-    if (json) {
-      return callback(json);
-    }
-  });
-}
 
 export class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      playlists: '',
-      selected_playlist: '',
-      selected_playlist_songs: '',
-      fav_songs: '',
-      fav_artists: '',
-      access_token: props.accessToken,
-      user_id: 1259501284
+      playlists: [],
+      selectedPlaylist: '',
+      selectedPlaylistSongs: '',
+      accessToken: props.accessToken,
+      userId: 1259501284,
+      searchType: 'artist',
+      searchQuery: ''
     }
+    this.setPageArtists = this.setPageArtists.bind(this);
+    this.setPageSongs = this.setPageSongs.bind(this);
+    this.search = this.search.bind(this);
+    this.setSearchType = this.setSearchType.bind(this);
   }
   componentDidMount() {
     const playlistId = '6ceEv0hwgGEOGLFGv0ivw1';
@@ -47,31 +29,21 @@ export class App extends Component {
     let fetchedData = {};
     // Get all playlists
     // Set first playlist as currently selected
-    spotifyRequest(`users/${this.state.user_id}/playlists`, 'GET', this.state.access_token, null, (json) => {
+    spotifyRequest(`users/${this.state.userId}/playlists`, 'GET', this.state.accessToken, null, (json) => {
       fetchedData.playlists = json.items;
-      fetchedData.selected_playlist = json.items[0];
+      fetchedData.selectedPlaylist = json.items[0];
       Promise.all([
         // Get first playlist tracks
         new Promise((res) => {
-          spotifyRequest(`users/${this.state.user_id}/playlists/${playlistId}/tracks`, 'GET', this.state.access_token, null, (json) => {
-            fetchedData.selected_playlist_songs = json.items;
+          spotifyRequest(`users/${this.state.userId}/playlists/${playlistId}/tracks`, 'GET', this.state.accessToken, null, (json) => {
+            fetchedData.selectedPlaylistSongs = json.items;
             res();
           });
         }),
         // Get user favorite songs
-        //TODO We need paginiation or something here. We should be able to access the next property off the request to continue requesting all of the songs
         new Promise((res) => {
-            spotifyRequest(`me/tracks?limit=50`, 'GET', this.state.access_token, null, (json) => {
-            fetchedData.fav_songs = json.items;
-            res();
-          });
-        }),
-        // Get user favorite artists
-        //TODO We need paginiation or something here. We should be able to access the next property off the request to continue requesting all of the songs
-        new Promise((res) => {
-          spotifyRequest(`me/following?type=artist&limit=50`, 'GET', this.state.access_token, null, (json) => {
-            console.log(json);
-            fetchedData.fav_artists = json.artists.items;
+            spotifyRequestNext(`me/tracks?limit=50`, this.state.accessToken, [], (json) => {
+            fetchedData.songList = json;
             res();
           });
         }),
@@ -82,17 +54,17 @@ export class App extends Component {
   }
   setPlaylist(id) {
     const selectedPlaylist = this.state.playlists.find(playlist => playlist.id === id);
-    spotifyRequest(`users/${this.state.user_id}/playlists/${selectedPlaylist.id}/tracks`, 'GET', this.state.access_token, null, (json) => {
+    spotifyRequest(`users/${this.state.userId}/playlists/${selectedPlaylist.id}/tracks`, 'GET', this.state.accessToken, null, (json) => {
       this.setState({
-        selected_playlist: selectedPlaylist,
-        selected_playlist_songs: json.items
+        selectedPlaylist: selectedPlaylist,
+        selectedPlaylistSongs: json.items
       });
     });
   }
   addSongToPlaylist(song) {
-    spotifyRequest(`users/${this.state.user_id}/playlists/${this.state.selected_playlist.id}/tracks?uris=spotify:track:${song}`, 'POST', this.state.access_token, null, (json) => {
-      spotifyRequest(`users/${this.state.user_id}/playlists/${this.state.selected_playlist.id}/tracks`, 'GET', this.state.access_token, null, (json) => {
-        this.setState({selected_playlist_songs: json.items});
+    spotifyRequest(`users/${this.state.userId}/playlists/${this.state.selectedPlaylist.id}/tracks?uris=spotify:track:${song}`, 'POST', this.state.accessToken, null, (json) => {
+      spotifyRequest(`users/${this.state.userId}/playlists/${this.state.selectedPlaylist.id}/tracks`, 'GET', this.state.accessToken, null, (json) => {
+        this.setState({selectedPlaylistSongs: json.items});
       });
     });
   }
@@ -102,20 +74,98 @@ export class App extends Component {
         uri: `spotify:track:${song}`
       }]
     }
-    spotifyRequest(`users/${this.state.user_id}/playlists/${this.state.selected_playlist.id}/tracks`, 'DELETE', this.state.access_token, JSON.stringify(data), (json) => {
-      this.setPlaylist(this.state.selected_playlist.id);
+    spotifyRequest(`users/${this.state.userId}/playlists/${this.state.selectedPlaylist.id}/tracks`, 'DELETE', this.state.accessToken, JSON.stringify(data), (json) => {
+      this.setPlaylist(this.state.selectedPlaylist.id);
     });
+  }
+  //TODO create a function for each page type and set you onClicks to that one function. Do all changes + state there
+  setContentPage(contentType) {
+    this.setState({contentType});
+  }
+  // Page Controllers
+  setPageArtists(e) {
+    // searchSong and searchArtist flags tell us whether or not we have search data or user data currently stored
+    if (!this.state.artistList || this.state.searchArtist) {
+      spotifyRequestNext(`me/following?type=artist&limit=50`, this.state.accessToken, [], (json) => {
+        this.setState({
+          artistList: json,
+          contentType: 'CONTENT_TYPE_ARTISTS',
+          searchArtist: false
+        });
+      });
+    } else {
+      this.setState({contentType: 'CONTENT_TYPE_ARTISTS'});
+    }
+  }
+  setPageSongs() {
+    if (!this.state.songList || this.state.searchSong) {
+      spotifyRequestNext(`me/tracks?limit=50`, this.state.accessToken, [], (json) => {
+        this.setState({
+          songList: json,
+          contentType: 'CONTENT_TYPE_SONGS',
+          searchSong: false
+        });
+      });
+    } else {
+      this.setState({contentType: 'CONTENT_TYPE_SONGS'});
+    }
+  }
+  //TODO clean up these addSongToPlaylist functions
+  renderContent() {
+    switch(this.state.contentType) {
+      case 'CONTENT_TYPE_ARTISTS':
+        return (
+          <ArtistList artists={this.state.artistList} fromSearch={this.state.searchArtist} accessToken={this.state.accessToken} addSongToPlaylist={(e) => {this.addSongToPlaylist(e.target.getAttribute('data-track-id'))}} />
+      )
+      default:
+        return (
+          <SongList songs={this.state.songList} addSongToPlaylist={(e) => {this.addSongToPlaylist(e.target.getAttribute('data-song-id'))}} />
+      )
+    }
+  }
+  search(e) {
+    const searchQuery = e.target.value;
+    const sortByPopularity = (a, b) => {
+      if (a.popularity > b.popularity) {
+        return -1;
+      } else {
+        return 1;
+      }
+    }
+    if (searchQuery !== '' && (e.keyCode === 13)) {
+      spotifyRequest(`search?q=${searchQuery}&type=${this.state.searchType}&market=US`, 'GET', this.state.accessToken, null, (json) => {
+        console.log(json)
+        if (this.state.searchType === 'artist') {
+          this.setState({
+            artistList: json.artists.items.sort((a, b) => sortByPopularity(a, b)),
+            contentType: 'CONTENT_TYPE_ARTISTS',
+            searchArtist: true,
+            searchQuery
+          });
+        } else {
+          this.setState({
+            songList: json.tracks.items.sort((a, b) => sortByPopularity(a, b)),
+            contentType: 'CONTENT_TYPE_SONGS',
+            searchSong: true,
+            searchQuery
+          });
+        }
+      });
+    }
+  }
+  setSearchType(e) {
+    const searchType = e.target.value;
+    this.setState({searchType});
   }
   render() {
     return (
-      <div className="container">
-        <PlaylistMenu playlists={this.state.playlists} selectPlaylist={(e) => {this.setPlaylist(e.target.value)}} songs={this.state.selected_playlist_songs} removeSong={(e) => this.removeSongFromPlaylist(e.target.getAttribute('data-song-id'))} />
+      <div className="Container">
+        <PlaylistMenu playlists={this.state.playlists} selectPlaylist={(e) => {this.setPlaylist(e.target.value)}} selectedPlaylist={this.state.selectedPlaylist} songs={this.state.selectedPlaylistSongs} removeSong={(e) => this.removeSongFromPlaylist(e.target.getAttribute('data-song-id'))} />
         <div className="ContentBox">
-          <ContentMenu />
-          //TODO make addSongToPlaylist method easier to reuse
-          <FavSongs favSongs={this.state.fav_songs} addSongToPlaylist={(e) => {this.addSongToPlaylist(e.target.getAttribute('data-song-id'))}} />
-          <FavArtists favArtists={this.state.fav_artists} addSongToPlaylist={(e) => {this.addSongToPlaylist(e.target.getAttribute('data-song-id'))}} />
-          <SearchResults />
+          <ContentMenu setPageSongs={this.setPageSongs} setPageArtists={this.setPageArtists} search={this.search} setSearchType={this.setSearchType} />
+          <div className="ContentBox-inner">
+            {this.renderContent()}
+          </div>
         </div>
       </div>
     )

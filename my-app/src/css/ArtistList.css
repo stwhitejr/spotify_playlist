@@ -1,0 +1,93 @@
+.ArtistList-item {
+  width: 16%;
+  text-align: center;
+  padding: 2%;
+  display: inline-block;
+}
+.ArtistList-image {
+  display: block;
+  margin: 0 auto 10px;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+}
+.ArtistPage-info {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 20px;
+}
+.ArtistPage-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  display: block;
+}
+.ArtistPageTopTracks {
+  margin: 0 20px;
+}
+.ArtistPageTopTracks-header {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.ArtistPageTopTracks-list {
+  padding: 10px;
+  background-color: #000;
+}
+.ArtistPageTopTracks-item {
+  display: inline-block;
+  width: 50%;
+  padding: 5px 0;
+  cursor: pointer;
+}
+.ArtistPageAlbums {
+  padding: 20px;
+}
+.ArtistPageAlbums-item {
+  display: flex;
+  padding: 10px 10px 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.ArtistPageAlbums-image {
+  width: 35%;
+  height: auto;
+  display: block;
+}
+.ArtistPageAlbums-content {
+  width: 63%;
+}
+.ArtistPageAlbums-header {
+  font-size: 160%;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.ArtistPageAlbumsSongs-row {
+  display: flex;
+  border-bottom: solid 1px #575757;
+  justify-content: space-between;
+  padding: 10px;
+  font-size: 90%;
+}
+.ArtistPageAlbumsSongs-play,
+.ArtistPageAlbumsSongs-playNoPreview {
+  width: 4%;
+}
+.ArtistPageAlbumsSongs-play::before {
+  content: '\203A';
+  display: block;
+  border-radius: 50%;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  width: 18px;
+  height: 18px;
+  background-color: #000;
+  cursor: pointer;
+}
+.ArtistPageAlbumsSongs-title {
+  width: 74%;
+}
+.ArtistPageAlbumsSongs-length {
+  width: 20%;
+}

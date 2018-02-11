@@ -1,41 +1,38 @@
 .PlaylistMenu {
+  background-color: #303030;
+  width: 24%;
+  overflow-y: scroll;
+}
+.PlaylistMenu section {
   padding: 10px;
-  background-color: #ccc;
+  border-bottom: solid 2px #000;
 }
 .PlaylistMenu-header {
-  margin-right: 20px;
   font-weight: bold;
+  margin-bottom: 5px;
 }
 .PlaylistMenu-select {
   border: solid 1px #ddd;
   padding: 5px;
+  width: 100%;
 }
 .PlaylistMenu-option {
   padding: 2px;
   border: 0;
 }
 .PlaylistMenuSongs {
-  position: relative;
-}
-.PlaylistMenuSongs-content {
-  display: none;
-  padding: 10px;
-}
-.PlaylistMenuSongs:hover .PlaylistMenuSongs-content {
-  display: block;
+  padding-right: 3px;
 }
 .PlaylistMenuSongs-song {
-  padding: 5px;
-  position: relative;
+  padding: 7px;
   cursor: pointer;
+  position: relative;
 }
-.PlaylistMenuSongs-song:hover::before {
-  content: 'Remove Song';
-  color: #fff;
-  background-color: #999;
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  padding: 5px;
+
+.PlaylistMenuSongs-song:nth-child(odd) {
+  background-color: #464646;
+}
+
+.PlaylistMenuSongs-song:hover {
+  background-color: #551818;
 }

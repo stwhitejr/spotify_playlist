@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import '../css/SongList.css';
 //TODO Create a better play button
 export class SongList extends Component {
-  constructor() {
-    super();
-    this.state = {
-      music: null
-    }
-    this.playMusic = this.playMusic.bind(this);
+  static propTypes = {
+    songs: PropTypes.array.isRequired,
+    addSongToPlaylist: PropTypes.func.isRequired
   }
-  playMusic(e, song) {
+  state = {
+    music: null
+  }
+  playMusic = (e, song) => {
     const button = e.target;
     if (this.state.music === null) {
       this.state.music = new Audio(song);
@@ -19,21 +20,21 @@ export class SongList extends Component {
       this.setState({music:null});
     }
   }
-  listSongs() {
+  listSongs = () => {
     if (this.props.songs) {
       return this.props.songs.map(song => {
         // User songs and search result songs get passed in differently
-        const id = song.track ? song.track.id : song.id;
-        const title = song.track ? song.track.name : song.name;
-        const artist = song.track ? song.track.artists[0].name : song.artists[0].name;
-        const preview = song.track ? song.track.preview_url : song.preview_url;
-        let length = song.track ? song.track.duration_ms : song.duration_ms;
+        const id = song.track ? song.track.id : song.id,
+          title = song.track ? song.track.name : song.name,
+          artist = song.track ? song.track.artists[0].name : song.artists[0].name,
+          preview = song.track ? song.track.preview_url : song.preview_url,
+          length = song.track ? song.track.duration_ms : song.duration_ms;
         const msToTime = (s) => {
-          let ms = s % 1000;
+          const ms = s % 1000;
           s = (s - ms) / 1000;
           let secs = s % 60;
           s = (s - secs) / 60;
-          let mins = s % 60;
+          const mins = s % 60;
           secs = secs.toString();
           secs = secs.length === 1 ? `${secs}0` : secs;
           return mins + ':' + secs;
@@ -41,7 +42,7 @@ export class SongList extends Component {
         return (
           <div className="SongList-row" key={id}>
             <div className={preview ? 'SongList-play' : 'SongList-playNoPreview'} onClick={e => preview ? this.playMusic(e, preview) : ''}></div>
-            <div className="SongList-title" data-song-id={id} onClick={this.props.addSongToPlaylist}>{title}</div>
+            <div className="SongList-title" data-track-id={id} onClick={this.props.addSongToPlaylist}>{title}</div>
             <div className="SongList-artist">{artist}</div>
             <div className="SongList-length">{msToTime(length)}</div>
           </div>

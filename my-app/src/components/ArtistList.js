@@ -1,69 +1,24 @@
 import React, { Component } from 'react';
 import { spotifyRequest } from '../utility/Spotify.js';
+import PropTypes from 'prop-types';
 import '../css/ArtistList.css';
 
 export class ArtistList extends Component {
-  constructor(props) {
-    super(props);
-    let sortedArtists = props.artists;
-    if (!props.fromSearch) {
-      sortedArtists.sort((a,b) => {
-        if (a.name.substring(0, 1) < b.name.substring(0, 1)) {
-          return -1
-        } else {
-          return 1;
-      }})
-    }
-    this.state = {
-      artists: sortedArtists,
-      selectedArtist: null,
-      accessToken: props.accessToken,
-      fromSearch: props.fromSearch,
-      music: null
-    }
-    this.selectArtist = this.selectArtist.bind(this);
-    this.playMusic = this.playMusic.bind(this);
+  static propTypes = {
+    artists: PropTypes.array.isRequired,
+    accessToken: PropTypes.string.isRequired,
+    addSongToPlaylist: PropTypes.func.isRequired,
+    selectArtist: PropTypes.func.isRequired,
+    selectedArtist: PropTypes.object,
+    artistAlbums: PropTypes.array,
+    artistTopSongs: PropTypes.array,
+    addRandomSongs: PropTypes.func.isRequired
   }
-  selectArtist(e) {
-    const selectedArtistId = e.target.getAttribute('data-artist-id');
-    let artistTopSongs,
-      artistAlbums;
-    const selectedArtist = this.state.artists.find((artist) => artist.id === selectedArtistId);
-    Promise.all([
-      new Promise((res) => {
-        spotifyRequest(`artists/${selectedArtistId}/top-tracks?country=US`, 'GET', this.state.accessToken, null, (json) => {
-          artistTopSongs = json.tracks;
-          res();
-        });
-      }),
-      new Promise((res) => {
-        spotifyRequest(`artists/${selectedArtistId}/albums`, 'GET', this.state.accessToken, null, (json) => {
-          artistAlbums = json.items;
-          res();
-        });
-      })
-    ]).then(() => {
-      Promise.all(artistAlbums.map((album, i) => {
-        return new Promise((res) => {
-          spotifyRequest(`albums/${album.id}/tracks`, 'GET', this.state.accessToken, null, (json) => {
-            artistAlbums[i].songs = json.items;
-            res();
-          });
-        })
-      })).then(() => {
-        console.log(artistAlbums);
-        artistAlbums = artistAlbums.filter(album => album.album_type !== 'single' && album.artists[0].id !== '0LyfQWJT6nXafLPZqxe9Of');
-        this.setState(
-          {
-            selectedArtist,
-            artistTopSongs,
-            artistAlbums
-          }
-        );
-      })
-    });
+  state = {
+    music: null
   }
-  playMusic(e, song) {
+
+  playMusic = (e, song) => {
     const button = e.target;
     if (this.state.music === null) {
       this.state.music = new Audio(song);
@@ -76,8 +31,8 @@ export class ArtistList extends Component {
   render() {
     return (
       <div>
-      <h4 onClick={(e) => this.setState({selectedArtist: null})}>Artists</h4>
-        {this.state.selectedArtist ? <ArtistPage artists={this.state.artists} artist={this.state.selectedArtist} addSongToPlaylist={this.props.addSongToPlaylist} topSongs={this.state.artistTopSongs} albums={this.state.artistAlbums} playMusic={this.playMusic} />:<ArtistListSub artists={this.state.artists} selectArtist={this.selectArtist} />}
+      <h4>Artists</h4>
+        {this.props.selectedArtist ? <ArtistPage artists={this.props.artists} artist={this.props.selectedArtist} addSongToPlaylist={this.props.addSongToPlaylist} topSongs={this.props.artistTopSongs} albums={this.props.artistAlbums} playMusic={this.playMusic} addRandomSongs={this.props.addRandomSongs} />:<ArtistListSub artists={this.props.artists} selectArtist={this.props.selectArtist} />}
       </div>
     )
   }
@@ -94,6 +49,11 @@ const ArtistListSub = (props) => (
   )}
   </div>
 )
+ArtistListSub.propTypes = {
+  artists: PropTypes.array.isRequired,
+  selectArtist: PropTypes.func.isRequired,
+  addRandomSongs: PropTypes.func.isRequired
+}
 const ArtistPage = (props) => {
   const msToTime = (s) => {
     let ms = s % 1000;
@@ -111,10 +71,15 @@ const ArtistPage = (props) => {
         {props.artist.images.length > 0 ? <img src={props.artist.images[0].url} className="ArtistPage-image" /> : ''}
         <div className="ArtistPageTopTracks">
           <div className="ArtistPageTopTracks-header">
-            {props.artist.name}
+            {props.artist.name} <span onClick={props.addRandomSongs}>Add Random Songs</span>
           </div>
           <div className="ArtistPageTopTracks-list">
-            {props.topSongs.map(track => <span className="ArtistPageTopTracks-item" onClick={props.addSongToPlaylist} key={track.id} data-track-id={track.id}>{track.name}</span>)}
+            {props.topSongs.map(track => (
+              <div className="ArtistPageTopTracks-item">
+                {track.preview_url && (<span onClick={e => props.playMusic(e, track.preview_url)}>&#128264;</span>)}
+                <span onClick={props.addSongToPlaylist} key={track.id} data-track-id={track.id}>{track.name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -150,6 +115,12 @@ const ArtistPage = (props) => {
       </div>
     </div>
   )
+}
+ArtistPage.propTypes = {
+  artist: PropTypes.object.isRequired,
+  albums: PropTypes.array.isRequired,
+  topSongs: PropTypes.array.isRequired,
+  addSongToPlaylist: PropTypes.func.isRequired
 }
 
 export default ArtistList;

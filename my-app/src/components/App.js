@@ -207,16 +207,15 @@ export class App extends Component {
     }, []);
     // Flatten all songs
     const allSongsMerged = [].concat.apply([], allSongs);
-    // @TODO
-    // Randomly filter allSongsMerged down to only 3 or whatever you want
-    // Merge these 2 arrays and then loop through them with a request
-    // You'll need to make sure you don't setState until you're done with the last one
-
-    // spotifyRequest(`users/${this.state.userId}/playlists/${this.state.selectedPlaylist}/tracks?uris=spotify:track:${song}`, 'POST', this.props.accessToken, null, (json) => {
-    //   spotifyRequest(`users/${this.state.userId}/playlists/${this.state.selectedPlaylist}/tracks`, 'GET', this.props.accessToken, null, (json) => {
-    //     this.setState({selectedPlaylistSongs: json.items});
-    //   });
-    // });
+    // Randomly sort the songs
+    allSongsMerged.sort((a,b) => 0.5 - Math.random());
+    const finalSongs = [...firstTwoTopSongs, allSongsMerged[0], allSongsMerged[1], allSongsMerged[2]];;
+    const trackURI = finalSongs.map(song => `spotify:track:${song}`);
+    spotifyRequest(`users/${this.state.userId}/playlists/${this.state.selectedPlaylist}/tracks?uris=${trackURI.join()}`, 'POST', this.props.accessToken, null, (json) => {
+      spotifyRequest(`users/${this.state.userId}/playlists/${this.state.selectedPlaylist}/tracks`, 'GET', this.props.accessToken, null, (json) => {
+        this.setState({selectedPlaylistSongs: json.items});
+      });
+    });
   }
   renderContent = () => {
     switch(this.state.contentType) {

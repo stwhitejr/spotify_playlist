@@ -71,7 +71,7 @@ const ArtistPage = (props) => {
         {props.artist.images.length > 0 ? <img src={props.artist.images[0].url} className="ArtistPage-image" /> : ''}
         <div className="ArtistPageTopTracks">
           <div className="ArtistPageTopTracks-header">
-            {props.artist.name} <span onClick={props.addRandomSongs}>Add Random Songs</span>
+            {props.artist.name} - <span onClick={props.addRandomSongs}>Add 5 Random Songs</span>
           </div>
           <div className="ArtistPageTopTracks-list">
             {props.topSongs.map(track => (

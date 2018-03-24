@@ -7,21 +7,20 @@ export class SongList extends Component {
     songs: PropTypes.array.isRequired,
     addSongToPlaylist: PropTypes.func.isRequired
   }
-  state = {
-    music: null
+  music = {
+    player: null
   }
-  playMusic = (e, song) => {
-    const button = e.target;
-    if (this.state.music === null) {
-      this.state.music = new Audio(song);
-      this.state.music.play();
+  playMusic = (song) => {
+    if (this.music.player === null) {
+      this.music.player = new Audio(song);
+      this.music.player.play();
     } else {
-      this.state.music.pause();
-      this.setState({music:null});
+      this.music.player.pause();
+      this.music.player = null;
     }
   }
   listSongs = () => {
-    if (this.props.songs) {
+    if (this.props.songs.length > 0) {
       return this.props.songs.map(song => {
         // User songs and search result songs get passed in differently
         const id = song.track ? song.track.id : song.id,
@@ -41,7 +40,7 @@ export class SongList extends Component {
         }
         return (
           <div className="SongList-row" key={id}>
-            <div className={preview ? 'SongList-play' : 'SongList-playNoPreview'} onClick={e => preview ? this.playMusic(e, preview) : ''}></div>
+            <div className={preview ? 'SongList-play' : 'SongList-playNoPreview'} onClick={e => preview ? this.playMusic(preview) : ''}></div>
             <div className="SongList-title" data-track-id={id} onClick={this.props.addSongToPlaylist}>{title}</div>
             <div className="SongList-artist">{artist}</div>
             <div className="SongList-length">{msToTime(length)}</div>

@@ -14,10 +14,12 @@ export class App extends Component {
   state = {
     playlists: [],
     selectedPlaylist: '',
-    selectedPlaylistSongs: '',
+    selectedPlaylistSongs: [],
     userId: 1259501284,
     searchType: 'artist',
-    searchQuery: ''
+    searchQuery: null,
+    songList: [],
+    contentType: 'CONTENT_TYPE_SONGS'
   }
 
   componentDidMount = () => {
@@ -94,7 +96,8 @@ export class App extends Component {
           artistList: json,
           contentType: 'CONTENT_TYPE_ARTISTS',
           searchArtist: false,
-          selectedArtist: null
+          selectedArtist: null,
+          searchQuery: null
         });
       });
     } else {
@@ -107,7 +110,8 @@ export class App extends Component {
         this.setState({
           songList: json,
           contentType: 'CONTENT_TYPE_SONGS',
-          searchSong: false
+          searchSong: false,
+          searchQuery: null
         });
       });
     } else {
@@ -234,7 +238,7 @@ export class App extends Component {
       <div className="Container">
         <PlaylistMenu playlists={this.state.playlists} selectPlaylist={this.setPlaylist} songs={this.state.selectedPlaylistSongs} removeSong={this.removeSongFromPlaylist} />
         <div className="ContentBox">
-          <ContentMenu setPageSongs={this.setPageSongs} setPageArtists={this.setPageArtists} search={this.search} setSearchType={this.setSearchType} />
+          <ContentMenu contentType={this.state.contentType} searchQuery={this.state.searchQuery} setPageSongs={this.setPageSongs} setPageArtists={this.setPageArtists} search={this.search} setSearchType={this.setSearchType} />
           <div className="ContentBox-inner">
             {this.renderContent()}
           </div>

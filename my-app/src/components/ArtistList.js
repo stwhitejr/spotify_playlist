@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { spotifyRequest } from '../utility/Spotify.js';
 import PropTypes from 'prop-types';
 import '../css/ArtistList.css';
 
@@ -14,18 +13,17 @@ export class ArtistList extends Component {
     artistTopSongs: PropTypes.array,
     addRandomSongs: PropTypes.func.isRequired
   }
-  state = {
-    music: null
+  music = {
+    player: null
   }
 
-  playMusic = (e, song) => {
-    const button = e.target;
-    if (this.state.music === null) {
-      this.state.music = new Audio(song);
-      this.state.music.play();
+  playMusic = (song) => {
+    if (this.music.player === null) {
+      this.music.player = new Audio(song);
+      this.music.player.play();
     } else {
-      this.state.music.pause();
-      this.setState({music:null});
+      this.music.player.pause();
+      this.music.player = null;
     }
   }
   render() {
@@ -51,8 +49,7 @@ const ArtistListSub = (props) => (
 )
 ArtistListSub.propTypes = {
   artists: PropTypes.array.isRequired,
-  selectArtist: PropTypes.func.isRequired,
-  addRandomSongs: PropTypes.func.isRequired
+  selectArtist: PropTypes.func.isRequired
 }
 const ArtistPage = (props) => {
   const msToTime = (s) => {
@@ -68,15 +65,15 @@ const ArtistPage = (props) => {
   return(
     <div className="ArtistPage">
       <div className="ArtistPage-info">
-        {props.artist.images.length > 0 ? <img src={props.artist.images[0].url} className="ArtistPage-image" /> : ''}
+        {props.artist.images.length > 0 ? <img alt={props.artist.name} src={props.artist.images[0].url} className="ArtistPage-image" /> : ''}
         <div className="ArtistPageTopTracks">
           <div className="ArtistPageTopTracks-header">
             {props.artist.name} - <span onClick={props.addRandomSongs}>Add 5 Random Songs</span>
           </div>
           <div className="ArtistPageTopTracks-list">
             {props.topSongs.map(track => (
-              <div className="ArtistPageTopTracks-item">
-                {track.preview_url && (<span onClick={e => props.playMusic(e, track.preview_url)}>&#128264;</span>)}
+              <div key={track.id} className="ArtistPageTopTracks-item">
+                {track.preview_url && (<span onClick={e => props.playMusic(track.preview_url)}><span role="img" aria-label="Play Music">&#128264;</span></span>)}
                 <span onClick={props.addSongToPlaylist} key={track.id} data-track-id={track.id}>{track.name}</span>
               </div>
             ))}
@@ -87,7 +84,7 @@ const ArtistPage = (props) => {
         {props.albums.map((album) => {
           return(
             <div className="ArtistPageAlbums-item" key={album.id}>
-              <img src={album.images[0].url} className="ArtistPageAlbums-image" />
+              <img alt={album.name} src={album.images[0].url} className="ArtistPageAlbums-image" />
               <div className="ArtistPageAlbums-content">
                 <div className="ArtistPageAlbums-header">
                   {album.name}
@@ -96,7 +93,7 @@ const ArtistPage = (props) => {
                   {album.songs ? album.songs.map((song) => {
                     return(
                       <div className="ArtistPageAlbumsSongs-row" key={song.id}>
-                        <div className={song.preview_url ? 'ArtistPageAlbumsSongs-play' : 'ArtistPageAlbumsSongs-playNoPreview'} onClick={e => song.preview_url ? props.playMusic(e, song.preview_url) : ''}>
+                        <div className={song.preview_url ? 'ArtistPageAlbumsSongs-play' : 'ArtistPageAlbumsSongs-playNoPreview'} onClick={e => song.preview_url ? props.playMusic(song.preview_url) : ''}>
                         </div>
                         <div className="ArtistPageAlbumsSongs-title" onClick={props.addSongToPlaylist} data-track-id={song.id}>
                           {song.name}
@@ -120,7 +117,8 @@ ArtistPage.propTypes = {
   artist: PropTypes.object.isRequired,
   albums: PropTypes.array.isRequired,
   topSongs: PropTypes.array.isRequired,
-  addSongToPlaylist: PropTypes.func.isRequired
+  addSongToPlaylist: PropTypes.func.isRequired,
+  addRandomSongs: PropTypes.func.isRequired
 }
 
 export default ArtistList;

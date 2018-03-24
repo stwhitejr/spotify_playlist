@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import '../css/ContentMenu.css';
 
 const ContentMenu = (props) => (
   <div className="ContentMenu">
-    <div className="ContentMenu-button" onClick={props.setPageSongs}>
+    <div className={props.contentType === 'CONTENT_TYPE_SONGS' && !props.searchQuery ? 'ContentMenu-button ContentMenu-button--active' : 'ContentMenu-button'} onClick={props.setPageSongs}>
       Favorite Songs
     </div>
-    <div className="ContentMenu-button" onClick={props.setPageArtists}>
+    <div className={props.contentType === 'CONTENT_TYPE_ARTISTS' && !props.searchQuery ? 'ContentMenu-button ContentMenu-button--active' : 'ContentMenu-button'} onClick={props.setPageArtists}>
       Favorite Artists
     </div>
-    <div className="ContentMenu-search">
+    <div className={props.searchQuery ? 'ContentMenu-search ContentMenu-search--active' : 'ContentMenu-search'} onKeyUp={props.search}>
       <span className="ContentMenu-label">
         Search
       </span>
@@ -25,7 +25,9 @@ const ContentMenu = (props) => (
 ContentMenu.propTypes = {
   search: PropTypes.func.isRequired,
   setPageSongs: PropTypes.func.isRequired,
-  setSearchType: PropTypes.func.isRequired
+  setSearchType: PropTypes.func.isRequired,
+  contentType: PropTypes.string.isRequired,
+  searchQuery: PropTypes.string
 }
 
 export default ContentMenu;

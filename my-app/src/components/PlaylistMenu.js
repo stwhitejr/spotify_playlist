@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import '../css/PlaylistMenu.css';
 
@@ -17,7 +17,7 @@ const PlaylistMenu = (props) => (
     <section className="PlayListMenuSongs">
       <div className="PlaylistMenu-header">Playlist Songs</div>
       <div className="PlaylistMenuSongs">
-        {props.songs ?
+        {props.songs.length > 0 ?
           props.songs.map(song => <div className="PlaylistMenuSongs-song" key={song.track.id} data-track-id={song.track.id} onClick={props.removeSong}>{song.track.artists[0].name} - {song.track.name}</div>) : ''
         }
       </div>

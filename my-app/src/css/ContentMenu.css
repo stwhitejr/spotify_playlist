@@ -6,9 +6,6 @@
   background-color: #303030;
   padding-bottom: 10px;
 }
-.ContentMenu-button:hover {
-  background-color: #7d7d7d;
-}
 .ContentMenu-button {
   padding: 15px;
   margin-right: 5px;
@@ -17,11 +14,18 @@
   cursor: pointer;
   background-color: #575757;
 }
+.ContentMenu-button:hover,
+.ContentMenu-button--active {
+  background-color: #7d7d7d;
+}
 .ContentMenu-search {
   background-color: #575757;
   padding: 10px;
   flex: 3;
   text-align: center;
+}
+.ContentMenu-search--active {
+  background-color: #7d7d7d;
 }
 .ContentMenu-label {
   width: 17%;
